@@ -56,6 +56,8 @@ LPAREN    : '(' ;
 RPAREN    : ')' ;
 LBRACE    : '{' ;
 RBRACE    : '}' ;
+LBRACKET  : '[' ; 
+RBRACKET  : ']' ; 
 SEMICOLON : ';' ;
 COMMA     : ',' ;
 
