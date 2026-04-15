@@ -1,94 +1,64 @@
-#  	Técnicas de Compilación - Trabajo Final - Primera parte
+# Compilador de Subconjunto C++ — Trabajo Final (Etapa 1)
 
-##  Resumen 
-Diseñar e implementar un compilador para un subconjunto del lenguaje C++ utilizando la herramienta ANTLR4, aplicando los conceptos teóricos y prácticos vistos en la materia de Técnicas de Compilación. 
-##  Descripción 
-El estudiante deberá desarrollar un compilador completo que sea capaz de analizar, verificar y generar código para programas escritos en un subconjunto del lenguaje C++. El compilador deberá implementar todas las fases del proceso de compilación: análisis léxico, análisis sintáctico, análisis semántico, generación de código intermedio y optimización. 
+**Materia:** Técnicas de Compilación  
+**Autor:** Gonzalo Gabriel Rementeria  
 
-##  Funcionalidades Requeridas 
-###  1. Análisis Léxico 
-● Implementar un analizador léxico utilizando ANTLR4 que reconozca los tokens del lenguaje. 
+---
 
-● Identificar y reportar errores léxicos. 
+## 📌 Descripción del Proyecto
+Este repositorio contiene la implementación de un compilador para un subconjunto del lenguaje C++. El proyecto se está desarrollando de forma incremental y actualmente cubre la **Etapa 1: Análisis Léxico**.
 
-● Generar una tabla de tokens. 
+El objetivo principal de esta etapa es leer un archivo fuente en C++, escanear el flujo de caracteres e identificar los lexemas válidos, transformándolos en **Tokens** clasificados, o reportando un error léxico si se encuentra un símbolo no reconocido por la gramática.
 
-###  2. Análisis Sintáctico 
-● Implementar un analizador sintáctico utilizando ANTLR4 que verifique la estructura gramatical del programa. 
+## 🚀 Estado de Implementación: Etapa 1 (Analizador Léxico)
+El analizador léxico actual cumple con todos los requisitos de la primera entrega:
+1. **Reconocimiento de Tokens:** Tokenización exitosa utilizando expresiones regulares y reglas de ANTLR4.
+2. **Tabla de Salida:** Generación por consola de una tabla estructurada mostrando el Tipo de Token, el Lexema y la Posición (Línea:Columna).
+3. **Manejo de Errores Léxicos:** Implementación de reglas *catch-all* para capturar caracteres inválidos, reportando su ubicación exacta sin detener el flujo de análisis.
+4. **Códigos de Salida:** El programa finaliza con código `0` (éxito) o `2` (errores léxicos) y utiliza colores en la terminal (Verde para éxito, Rojo para errores).
 
-● Construir un árbol de sintaxis abstracta (AST). 
+### Cobertura del Subconjunto de C++
+El lexer (`cpplexer.g4`) es capaz de reconocer:
+* **Tipos de Datos:** `int`, `char`, `double`, `void`.
+* **Palabras Reservadas:** `if`, `else`, `for`, `while`, `break`, `continue`, `return`.
+* **Literales:** Números enteros (`NUM_INT`), números decimales (`NUM_DOUBLE`), caracteres (`CHAR`) y cadenas de texto (`STRING`).
+* **Operadores:** 
+  * Aritméticos: `+`, `-`, `*`, `/`, `%`, `++`, `--`
+  * Relacionales: `==`, `!=`, `<`, `<=`, `>`, `>=`
+  * Lógicos: `&&`, `||`, `!`
+  * Asignación: `=`
+* **Puntuación y Agrupación:** `(`, `)`, `{`, `}`, `;`, `,`
+* **Ruido (Ignorado):** Espacios en blanco, tabulaciones, saltos de línea, comentarios de una línea (`//`) y comentarios de bloque (`/* */`).
 
-● Identificar y reportar errores sintácticos. 
+---
 
-● Visualizar el árbol sintáctico generado. 
+## 📂 Estructura del Proyecto
 
-###  3. Análisis Semántico 
-● Implementar un analizador semántico que verifique la coherencia semántica del programa. 
+```text
+TC/
+ ├── .gitignore
+ ├── README.md
+ ├── pom.xml                                 <-- Configuración de Maven y dependencias ANTLR
+ ├── pruebas/
+ │    └── prueba.cpp                         <-- Archivo de prueba con código C++ válido
+ └── src/
+      └── main/
+           ├── antlr4/gramatica/
+           │    └── cpplexer.g4              <-- Gramática léxica principal
+           └── java/compilador/
+                └── Main.java                <-- Orquestador principal
 
-● Construir y mantener una tabla de símbolos. 
-
-● Verificar tipos de datos y compatibilidad en operaciones. 
-
-● Verificar el ámbito de las variables y funciones. 
-
-● Reportar errores semánticos (con detalles específicos). 
-
-● Distinguir entre errores (críticos) y warnings (no críticos). 
-
-###  4. Generación de Código Intermedio 
-● Implementar un generador de código de tres direcciones. 
-
-● Manejar expresiones aritméticas y lógicas. 
-
-● Manejar estructuras de control (if-else, bucles). 
-
-● Manejar llamadas a funciones y retorno de valores. 
-
-###  5. Optimización de Código 
-● Implementar al menos tres técnicas de optimización, que pueden incluir: 
-
-○ Propagación de constantes 
-
-○ Eliminación de código muerto 
-
-
-○ Simplificación de expresiones 
-
-○ Eliminación de subexpresiones comunes 
-
-○ Optimización de bucles 
-
-###  6. Salidas del Compilador 
-● Generar archivos de salida para el código intermedio y optimizado. 
-
-● Implementar un sistema de reporte de errores y warnings que utilice colores para diferenciarlos (verde para éxito, amarillo para warnings, rojo para errores). 
-
-Subconjunto del Lenguaje C++ a Implementar 
-Tipos de Datos 
-● int 
-
-● char 
-
-● double 
-
-● void (para funciones) 
-
-Estructuras de Control 
-● Condicionales (if-else) 
-
-● Bucles (for, while) 
-
-● Sentencias de control de bucle (break, continue) 
-
-Elementos del Lenguaje 
-● Declaración de variables 
-
-● Declaración de funciones 
-
-● Expresiones aritméticas y lógicas 
-
-● Llamadas a funciones 
-
-● Retorno de valores 
-
-● Asignaciones 
+--------------------------------------------------------------------------------
+📊 Ejemplo de Salida Esperada
+Al ejecutar el programa sobre un archivo C++ válido, la consola imprimirá lo siguiente:
+---------------------------------------------------------
+TIPO (TOKEN)    | LEXEMA               | POSICION (L:C)
+---------------------------------------------------------
+INT             | int                  | 2:0
+ID              | main                 | 2:4
+LPAREN          | (                    | 2:8
+RPAREN          | )                    | 2:9
+LBRACE          | {                    | 2:11
+DOUBLE          | double               | 3:4
+...
+---------------------------------------------------------
