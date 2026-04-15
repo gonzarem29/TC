@@ -1,0 +1,18 @@
+# Archivos compilados de Java
+*.class
+
+# Directorio de construcción de Maven
+target/
+
+# Archivos generados por el sistema operativo
+.DS_Store
+Thumbs.db
+
+# Configuraciones de Entornos de Desarrollo (IDEs)
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
