@@ -58,6 +58,7 @@ expr
     | literal                                         # ExprLiteral
     | LPAREN expr RPAREN                              # ExprParentesis
     | op=(NOT | MINUS) expr                           # ExprUnaria
+    | expr op=(INC | DEC)                             # ExprPostUnaria
     | expr op=(MUL | DIV | MOD) expr                  # ExprMulDiv
     | expr op=(PLUS | MINUS) expr                     # ExprAddSub
     | expr op=(LT | LE | GT | GE) expr                # ExprRelacional
