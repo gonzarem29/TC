@@ -3,6 +3,7 @@ import java.util.List;
 
 // 1. CLASE BASE PADRE
 public abstract class ASTNode { 
+    public int line;
     public abstract void print(String indent);
 }
 
