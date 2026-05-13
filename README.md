@@ -293,6 +293,6 @@ Block:
 
 <div align="center">
 
-*Materia: Técnicas de Compilación · Universidad · 2026*
+*Materia: Técnicas de Compilación · Universidad Blas Pascal · 2026*
 
 </div>
