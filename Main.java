@@ -43,8 +43,22 @@ public class Main {
 
             // 7. Visualizar el árbol gráficamente (Ventana Interactiva)
             System.out.println("Abriendo ventana con el Árbol Sintáctico...");
-            TreeViewer viewer = new TreeViewer(Arrays.asList(parser.getRuleNames()), tree);
-            viewer.open();
+            javax.swing.SwingUtilities.invokeLater(() -> {
+                TreeViewer viewer = new TreeViewer(
+                    Arrays.asList(parser.getRuleNames()), tree
+                );
+                viewer.setScale(1.5);
+            
+                javax.swing.JFrame frame = new javax.swing.JFrame("Parse Tree");
+                frame.setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
+                frame.add(new javax.swing.JScrollPane(viewer));
+                frame.setSize(800, 600);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            });
+
+// Pausa para que la ventana se renderice antes de continuar
+Thread.sleep(500);
 
             // 8. CONSTRUCCIÓN DEL AST (Etapa 2 finalizada)
             System.out.println("Construyendo Árbol de Sintaxis Abstracta (AST)...");
