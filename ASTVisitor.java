@@ -38,6 +38,35 @@ public class ASTVisitor extends cppparserBaseVisitor<ASTNode> {
         ASTNode body = visit(ctx.bloque());
         
         FuncDeclNode nodo = new FuncDeclNode(tipo, id, body);
+        // Capturar parámetros
+        if (ctx.parametros() != null) {
+            for (cppparser.ParametroContext p : ctx.parametros().parametro()) {
+                nodo.params.add(new VarDeclNode(p.tipo().getText(), p.ID().getText(), null));
+            }
+        }
+        
+
+        nodo.line = ctx.getStart().getLine();
+        return nodo;
+    }
+
+    @Override
+    public ASTNode visitExprLlamada(cppparser.ExprLlamadaContext ctx) {
+        return visitLlamadaFuncionHelper(ctx.llamadaFuncion());
+    }
+    
+    @Override
+    public ASTNode visitSentLlamadaFuncion(cppparser.SentLlamadaFuncionContext ctx) {
+        return visitLlamadaFuncionHelper(ctx.llamadaFuncion());
+    }
+    
+    private ASTNode visitLlamadaFuncionHelper(cppparser.LlamadaFuncionContext ctx) {
+        FuncCallNode nodo = new FuncCallNode(ctx.ID().getText());
+        if (ctx.argumentos() != null) {
+            for (cppparser.ExprContext arg : ctx.argumentos().expr()) {
+                nodo.args.add(visit(arg));
+            }
+        }
         nodo.line = ctx.getStart().getLine();
         return nodo;
     }
