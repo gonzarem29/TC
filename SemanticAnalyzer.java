@@ -45,8 +45,26 @@ public class SemanticAnalyzer {
         if (node instanceof ForNode) return analyzeFor((ForNode) node); 
         if (node instanceof WhileNode) return analyzeWhile((WhileNode) node);
         if (node instanceof ReturnNode) return analyzeReturn((ReturnNode) node);
+        if (node instanceof FuncCallNode) return analyzeFuncCall((FuncCallNode) node);
 
         return "void";
+    }
+
+    private String analyzeFuncCall(FuncCallNode node) {
+        Symbol sym = tabla.resolve(node.name);
+        if (sym == null) {
+            reporter.error(node.line, "Llamada a función no declarada: '" + node.name + "'");
+            return "error";
+        }
+        if (sym.getKind() != Symbol.Kind.FUNCION) {
+            reporter.error(node.line, "'" + node.name + "' no es una función.");
+            return "error";
+        }
+        // Analizar argumentos (para detectar errores dentro de ellos)
+        for (ASTNode arg : node.args) {
+            analyzeNode(arg);
+        }
+        return sym.getType(); // Devuelve el tipo de retorno de la función
     }
 
     private String analyzeBlock(BlockNode node) {
@@ -63,14 +81,28 @@ public class SemanticAnalyzer {
             reporter.error(node.line, "La función '" + node.id + "' ya ha sido declarada.");
             return "error";
         }
-
+    
+        // 1. Registrar la función en el scope ACTUAL (global) ANTES de abrir el scope de parámetros
         Symbol sym = new Symbol(node.id, node.type, Symbol.Kind.FUNCION, node.line);
         tabla.define(sym);
         reporter.info("Función '" + node.id + "' declarada (" + node.type + ")");
-
+    
+        // 2. Abrir scope para los parámetros
         this.tipoFuncionActual = node.type;
         this.nombreFuncionActual = node.id;
+    
+        tabla.enterScope();
+        for (VarDeclNode param : node.params) {
+            Symbol paramSym = new Symbol(param.id, param.type, Symbol.Kind.VARIABLE, node.line);
+            tabla.define(paramSym);
+            reporter.info("Parámetro declarado: " + param.id + " -> " + param.type);
+        }
+    
+        // 3. El body (BlockNode) abrirá su propio scope interno — eso está bien
         if (node.body != null) analyzeNode(node.body);
+    
+        tabla.exitScope();
+    
         this.tipoFuncionActual = null;
         this.nombreFuncionActual = null;
         return "void";
@@ -123,6 +155,7 @@ public class SemanticAnalyzer {
     }
 
     private String analyzeNum(NumNode node) {
+        if (node.value.startsWith("'")) return "char";
         if (node.value.contains(".")) return "double";
         return "int";
     }
