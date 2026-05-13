@@ -1,64 +1,87 @@
-# Compilador de Subconjunto C++ — Trabajo Final (Etapa 1)
+# Compilador de Subconjunto C++ — Trabajo Final (Etapas 1 y 2)
 
 **Materia:** Técnicas de Compilación  
-**Autor:** Gonzalo Gabriel Rementeria  
+**Autor:** Gonzalo Gabriel Rementeria
 
 ---
 
 ## 📌 Descripción del Proyecto
-Este repositorio contiene la implementación de un compilador para un subconjunto del lenguaje C++. El proyecto se está desarrollando de forma incremental y actualmente cubre la **Etapa 1: Análisis Léxico**.
+Este repositorio contiene la implementación de un compilador para un subconjunto del lenguaje C++. El proyecto se está desarrollando de forma incremental para el Trabajo Final de la materia [1].
 
-El objetivo principal de esta etapa es leer un archivo fuente en C++, escanear el flujo de caracteres e identificar los lexemas válidos, transformándolos en **Tokens** clasificados, o reportando un error léxico si se encuentra un símbolo no reconocido por la gramática.
+Actualmente, el proyecto cubre exitosamente la **Etapa 1: Análisis Léxico** y la **Etapa 2: Análisis Sintáctico**. El compilador es capaz de escanear el código fuente, clasificar los tokens, validar la estructura gramatical, visualizar el Árbol de Derivación (Parse Tree) y construir un Árbol de Sintaxis Abstracta (AST) limpio y enfocado en la semántica [2].
+
+---
 
 ## 🚀 Estado de Implementación: Etapa 1 (Analizador Léxico)
-El analizador léxico actual cumple con todos los requisitos de la primera entrega:
+El analizador léxico (`cpplexer.g4`) cumple con todos los requisitos de la primera entrega:
 1. **Reconocimiento de Tokens:** Tokenización exitosa utilizando expresiones regulares y reglas de ANTLR4.
 2. **Tabla de Salida:** Generación por consola de una tabla estructurada mostrando el Tipo de Token, el Lexema y la Posición (Línea:Columna).
-3. **Manejo de Errores Léxicos:** Implementación de reglas *catch-all* para capturar caracteres inválidos, reportando su ubicación exacta sin detener el flujo de análisis.
-4. **Códigos de Salida:** El programa finaliza con código `0` (éxito) o `2` (errores léxicos) y utiliza colores en la terminal (Verde para éxito, Rojo para errores).
+3. **Manejo de Errores Léxicos:** Implementación de regla *catch-all* para capturar caracteres inválidos, reportando su ubicación exacta sin detener el flujo de análisis [3].
+4. **Cobertura de C++:** Reconoce tipos de datos (`int`, `double`, etc.), estructuras de control (`if`, `for`, `while`), literales, puntuación y operadores relacionales/matemáticos. Ignora el "ruido" como los espacios y comentarios [4].
 
-### Cobertura del Subconjunto de C++
-El lexer (`cpplexer.g4`) es capaz de reconocer:
-* **Tipos de Datos:** `int`, `char`, `double`, `void`.
-* **Palabras Reservadas:** `if`, `else`, `for`, `while`, `break`, `continue`, `return`.
-* **Literales:** Números enteros (`NUM_INT`), números decimales (`NUM_DOUBLE`), caracteres (`CHAR`) y cadenas de texto (`STRING`).
-* **Operadores:** 
-  * Aritméticos: `+`, `-`, `*`, `/`, `%`, `++`, `--`
-  * Relacionales: `==`, `!=`, `<`, `<=`, `>`, `>=`
-  * Lógicos: `&&`, `||`, `!`
-  * Asignación: `=`
-* **Puntuación y Agrupación:** `(`, `)`, `{`, `}`, `;`, `,`
-* **Ruido (Ignorado):** Espacios en blanco, tabulaciones, saltos de línea, comentarios de una línea (`//`) y comentarios de bloque (`/* */`).
+---
+
+## 🚀 Estado de Implementación: Etapa 2 (Analizador Sintáctico)
+Se ha superado la segunda fase del compilador, encargada de validar la jerarquía del programa y construir sus estructuras de datos, cumpliendo los siguientes hitos [2]:
+
+1. **Reglas Sintácticas (`cppparser.g4`):** Implementación de una gramática libre de contexto que respeta la precedencia de operadores matemáticos, las declaraciones de funciones (`main`), bloques de código, asignaciones y bucles (`for`, `while`) [5, 6].
+2. **Visualización del Parse Tree:** Integración de la herramienta `TreeViewer` de ANTLR dentro de Java para desplegar una ventana gráfica interactiva con el Árbol de Derivación completo generado automáticamente (incluyendo todo el detalle sintáctico como llaves y puntos y comas) [7, 8].
+3. **Patrón Visitor y Traducción Dirigida por Sintaxis:** Creación de un traductor semántico (`ASTVisitor.java`) que recorre el Parse Tree utilizando un flujo *bottom-up* para extraer solo la información relevante [9, 10].
+4. **Construcción del Árbol de Sintaxis Abstracta (AST):** Diseño de una jerarquía de clases personalizadas en Java (`ASTNode.java`) con programación defensiva. El compilador construye internamente el AST y lo imprime en la consola mediante un formato de texto indentado, demostrando una estructura compacta y puramente semántica (sin ruido sintáctico) lista para ser evaluada [11, 12].
 
 ---
 
 ## 📂 Estructura del Proyecto
+El proyecto utiliza una estructura de archivos plana ubicada en la raíz del repositorio para facilitar su compilación directa por consola:
 
 ```text
 TC/
  ├── .gitignore
  ├── README.md
- ├── pom.xml                                 <-- Configuración de Maven y dependencias ANTLR
- ├── pruebas/
- │    └── prueba.cpp                         <-- Archivo de prueba con código C++ válido
- └── src/
-      └── main/
-           ├── antlr4/gramatica/
-           │    └── cpplexer.g4              <-- Gramática léxica principal
-           └── java/compilador/
-                └── Main.java                <-- Orquestador principal
+ ├── cpplexer.g4          <-- Gramática léxica (Tokens y Reglas base)
+ ├── cppparser.g4         <-- Gramática sintáctica (Estructuras y Precedencia)
+ ├── Main.java            <-- Orquestador principal (Lexer, Parser y GUI)
+ ├── ASTNode.java         <-- Jerarquía de clases de los nodos semánticos del AST
+ ├── ASTVisitor.java      <-- Visitor que traduce el Parse Tree al AST
+ └── prueba.cpp           <-- Archivo de prueba con el código C++ fuente
 
 --------------------------------------------------------------------------------
-📊 Ejemplo de Salida Esperada
-Al ejecutar el programa sobre un archivo C++ válido, la consola imprimirá lo siguiente:
----------------------------------------------------------
-TIPO (TOKEN)    | LEXEMA               | POSICION (L:C)
----------------------------------------------------------
-INT             | int                  | 2:0
-ID              | main                 | 2:4
-LPAREN          | (                    | 2:8
-RPAREN          | )                    | 2:9
-LBRACE          | {                    | 2:11
-DOUBLE          | double               | 3:4
-...
----------------------------------------------------------
+🛠️ Instrucciones de Ejecución
+Para compilar y ejecutar el proyecto desde la terminal, posicionarse en la raíz del repositorio y ejecutar el siguiente flujo de comandos (requiere tener ANTLR4 configurado en el sistema)
+:
+Generar el Lexer, Parser y los base Visitors:
+Compilar todas las clases Java:
+Ejecutar el compilador sobre el archivo de prueba:
+
+--------------------------------------------------------------------------------
+📊 Ejemplo de Salida del Árbol Sintáctico Abstracto (AST)
+Al ejecutar el programa, además de abrirse la ventana gráfica del Parse Tree, la consola imprimirá la versión compacta y semántica del código (el AST). Ejemplo de una asignación y bucle procesados:
+--- ÁRBOL DE SINTAXIS ABSTRACTA (AST) ---
+Block:
+  FuncDecl(int main)
+    Block:
+      VarDecl(double precio)
+        Num(150.5)
+      VarDecl(int cantidad)
+        Num(3)
+      Assign(total)
+        BinOp(*)
+          Id(precio)
+          Id(cantidad)
+      For:
+        Init:
+          VarDecl(int i)
+            Num(0)
+        Condicion:
+          BinOp(<)
+            Id(i)
+            Id(cantidad)
+        Update:
+          UnaryOp(++)
+            Id(i)
+        Cuerpo:
+          Block:
+            Assign(precio)
+              BinOp(+)
+                Id(precio)
+                Num(1)
