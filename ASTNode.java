@@ -75,7 +75,7 @@ class IdNode extends ASTNode {
 class FuncDeclNode extends ASTNode {
     String type, id;
     ASTNode body;
-
+    List<VarDeclNode> params = new ArrayList<>();
     public FuncDeclNode(String type, String id, ASTNode body) {
         this.type = type; this.id = id; this.body = body;
     }
@@ -84,6 +84,19 @@ class FuncDeclNode extends ASTNode {
     public void print(String indent) {
         System.out.println(indent + "FuncDecl(" + type + " " + id + ")");
         if (body != null) body.print(indent + "  ");
+    }
+}
+
+class FuncCallNode extends ASTNode {
+    String name;
+    List<ASTNode> args = new ArrayList<>();
+
+    public FuncCallNode(String name) { this.name = name; }
+
+    @Override
+    public void print(String indent) {
+        System.out.println(indent + "FuncCall(" + name + ")");
+        for (ASTNode a : args) a.print(indent + "  ");
     }
 }
 
