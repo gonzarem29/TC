@@ -54,6 +54,24 @@ public class Main {
             System.out.println("\n--- ÁRBOL DE SINTAXIS ABSTRACTA (AST) ---");
             astRoot.print(""); // Imprime el AST limpio
 
+              // ------------------------------------------------------
+            // ETAPA 3: ANÁLISIS SEMÁNTICO (NUEVO)
+            // ------------------------------------------------------
+            SemanticAnalyzer analizadorSemantico = new SemanticAnalyzer();
+            
+            // Le pasamos la raíz del AST que construimos en la Etapa 2
+            analizadorSemantico.analyze(astRoot);
+            
+            // Imprimimos el cuadro de resumen final con colores
+            analizadorSemantico.getReporter().printSummary();
+            
+            // Si hay errores críticos, detenemos la compilación aquí mismo
+            if (analizadorSemantico.getReporter().hayErrores()) {
+                System.out.println("\u001B[31mEl proceso de compilación se detuvo debido a errores semánticos.\u001B[0m");
+                return;
+            }
+
+
         } catch (IOException e) {
             System.err.println("Error al leer el archivo: " + e.getMessage());
             System.exit(1);
