@@ -163,6 +163,20 @@ public class ASTVisitor extends cppparserBaseVisitor<ASTNode> {
         return nodo;
     }
 
+    @Override
+    public ASTNode visitSentBreak(cppparser.SentBreakContext ctx) {
+        BreakNode nodo = new BreakNode();
+        nodo.line = ctx.getStart().getLine();
+        return nodo;
+    }
+
+    @Override
+    public ASTNode visitSentContinue(cppparser.SentContinueContext ctx) {
+        ContinueNode nodo = new ContinueNode();
+        nodo.line = ctx.getStart().getLine();
+        return nodo;
+    }
+
     // ==========================================
     // 6. EXPRESIONES MATEMÁTICAS Y RELACIONALES
     // ==========================================

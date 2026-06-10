@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,11 +11,15 @@ public class TACGenerator {
     private List<Quadruple> code;
     private int tempCount;
     private int labelCount;
+    private Deque<String> breakLabels;
+    private Deque<String> continueLabels;
 
     public TACGenerator() {
         this.code = new ArrayList<>();
         this.tempCount = 0;
         this.labelCount = 0;
+        this.breakLabels = new ArrayDeque<>();
+        this.continueLabels = new ArrayDeque<>();
     }
 
     public String newTemp() {
@@ -65,7 +71,9 @@ public class TACGenerator {
         else if (node instanceof WhileNode)     genWhile((WhileNode) node);
         else if (node instanceof ForNode)       genFor((ForNode) node);
         else if (node instanceof ReturnNode)    genReturn((ReturnNode) node);
-        else if (node instanceof FuncCallNode) { genFuncCall((FuncCallNode) node); }
+        else if (node instanceof FuncCallNode)  genFuncCall((FuncCallNode) node);
+        else if (node instanceof BreakNode)     genBreak();
+        else if (node instanceof ContinueNode)  genContinue();
     }
 
     private String genExpr(ASTNode node) {
@@ -80,8 +88,6 @@ public class TACGenerator {
         return null;
     }
 
-    // --- Esqueleto: métodos a implementar ---
-
     private void genBlock(BlockNode node) {
         for (ASTNode s : node.sentencias) {
             genStmt(s);
@@ -89,7 +95,8 @@ public class TACGenerator {
     }
 
     private void genFuncDecl(FuncDeclNode node) {
-        System.out.println("[TAC] FuncDecl pendiente: " + node.id);
+        emit("label", null, null, "FUNC_" + node.id);
+        genStmt(node.body);
     }
 
     private void genVarDecl(VarDeclNode node) {
@@ -105,28 +112,89 @@ public class TACGenerator {
     }
 
     private void genIf(IfNode node) {
-        System.out.println("[TAC] If pendiente");
+        String labelElse = newLabel();
+        String labelEnd = newLabel();
+        String condTemp = genExpr(node.condition);
+        emit("if_False", condTemp, null, labelElse);
+        genStmt(node.thenBlock);
+        emit("goto", null, null, labelEnd);
+        emit("label", null, null, labelElse);
+        if (node.elseBlock != null) {
+            genStmt(node.elseBlock);
+        }
+        emit("label", null, null, labelEnd);
     }
 
     private void genWhile(WhileNode node) {
-        System.out.println("[TAC] While pendiente");
+        String labelCond = newLabel();
+        String labelEnd = newLabel();
+        breakLabels.push(labelEnd);
+        continueLabels.push(labelCond);
+        emit("label", null, null, labelCond);
+        String condTemp = genExpr(node.condition);
+        emit("if_False", condTemp, null, labelEnd);
+        genStmt(node.body);
+        emit("goto", null, null, labelCond);
+        emit("label", null, null, labelEnd);
+        breakLabels.pop();
+        continueLabels.pop();
     }
 
     private void genFor(ForNode node) {
-        System.out.println("[TAC] For pendiente");
+        String labelCond = newLabel();
+        String labelEnd = newLabel();
+        breakLabels.push(labelEnd);
+        continueLabels.push(labelCond);
+        genStmt(node.init);
+        emit("label", null, null, labelCond);
+        String condTemp = genExpr(node.condition);
+        emit("if_False", condTemp, null, labelEnd);
+        genStmt(node.body);
+        genStmt(node.update);
+        emit("goto", null, null, labelCond);
+        emit("label", null, null, labelEnd);
+        breakLabels.pop();
+        continueLabels.pop();
     }
 
     private void genReturn(ReturnNode node) {
-        System.out.println("[TAC] Return pendiente");
+        if (node.expr != null) {
+            String exprTemp = genExpr(node.expr);
+            emit("return", exprTemp, null, null);
+        } else {
+            emit("return", null, null, null);
+        }
     }
 
     private void genFuncCall(FuncCallNode node) {
-        System.out.println("[TAC] FuncCall pendiente: " + node.name);
+        for (ASTNode arg : node.args) {
+            String argTemp = genExpr(arg);
+            emit("param", argTemp, null, null);
+        }
+        String result = newTemp();
+        emit("call", node.name, null, result);
     }
 
     private String genFuncCallExpr(FuncCallNode node) {
-        System.out.println("[TAC] FuncCallExpr pendiente: " + node.name);
-        return null;
+        for (ASTNode arg : node.args) {
+            String argTemp = genExpr(arg);
+            emit("param", argTemp, null, null);
+        }
+        String result = newTemp();
+        emit("call", node.name, null, result);
+        return result;
+    }
+
+    private void genBreak() {
+        if (!breakLabels.isEmpty()) {
+            emit("goto", null, null, breakLabels.peek());
+        }
+    }
+
+    private void genContinue() {
+        if (!continueLabels.isEmpty()) {
+            emit("goto", null, null, continueLabels.peek());
+        }
     }
 
     private String genNum(NumNode node) {

@@ -220,3 +220,21 @@ class ReturnNode extends ASTNode {
         if (expr != null) expr.print(indent + "  ");
     }
 }
+
+class BreakNode extends ASTNode {
+    public BreakNode() {}
+
+    @Override
+    public void print(String indent) {
+        System.out.println(indent + "Break");
+    }
+}
+
+class ContinueNode extends ASTNode {
+    public ContinueNode() {}
+
+    @Override
+    public void print(String indent) {
+        System.out.println(indent + "Continue");
+    }
+}
