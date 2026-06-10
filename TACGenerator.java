@@ -93,11 +93,15 @@ public class TACGenerator {
     }
 
     private void genVarDecl(VarDeclNode node) {
-        System.out.println("[TAC] VarDecl pendiente: " + node.id);
+        if (node.initExpr != null) {
+            String exprTemp = genExpr(node.initExpr);
+            emit("=", exprTemp, null, node.id);
+        }
     }
 
     private void genAssign(AssignNode node) {
-        System.out.println("[TAC] Assign pendiente: " + node.id);
+        String exprTemp = genExpr(node.expr);
+        emit("=", exprTemp, null, node.id);
     }
 
     private void genIf(IfNode node) {
