@@ -24,10 +24,18 @@ public class SemanticAnalyzer {
         System.out.println("\n\u001B[34m══════════════════════════════════════════\u001B[0m");
         System.out.println("\u001B[34m INICIANDO ANÁLISIS SEMÁNTICO (Etapa 3) \u001B[0m");
         System.out.println("\u001B[34m══════════════════════════════════════════\u001B[0m");
-        analyzeNode(raiz);
-        tabla.printTable();
-    }
 
+        // ✅ En vez de analyzeNode(raiz) que crea un scope extra,
+        // iteramos directamente los hijos del bloque raíz.
+        if (raiz instanceof BlockNode) {
+            for (ASTNode sentencia : ((BlockNode) raiz).sentencias) {
+                analyzeNode(sentencia);
+            }
+        }
+
+        tabla.printTable(); // Ahora scope 0 tiene las funciones
+    }
+    
     private String analyzeNode(ASTNode node) {
         if (node == null) return "void";
         

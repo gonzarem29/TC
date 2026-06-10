@@ -21,7 +21,7 @@ public class ErrorReporter {
     // ------------------------------------------
     public void error(int linea, String mensaje) {
         cantErrores++;
-        System.out.println(ROJO + "[ERROR SEMÁNTICO | Línea " + linea + "] " + mensaje + RESET);
+        System.out.println(ROJO + "[ERROR SEMANTICO | Línea " + linea + "] " + mensaje + RESET);
     }
 
     // ------------------------------------------
@@ -29,7 +29,7 @@ public class ErrorReporter {
     // ------------------------------------------
     public void warning(int linea, String mensaje) {
         cantWarnings++;
-        System.out.println(AMARILLO + "[WARNING | Línea " + linea + "] " + mensaje + RESET);
+        System.out.println(AMARILLO + "[WARNING | Linea " + linea + "] " + mensaje + RESET);
     }
 
     // ------------------------------------------
@@ -44,7 +44,7 @@ public class ErrorReporter {
     // ------------------------------------------
     public void printSummary() {
         System.out.println("\n" + AZUL + "══════════════════════════════════════════" + RESET);
-        System.out.println(AZUL + "       RESUMEN DEL ANÁLISIS SEMÁNTICO     " + RESET);
+        System.out.println(AZUL + "       RESUMEN DEL ANALISIS SEMANTICO     " + RESET);
         System.out.println(AZUL + "══════════════════════════════════════════" + RESET);
         if (cantErrores == 0 && cantWarnings == 0) {
             System.out.println(VERDE + " Análisis completado sin errores ni warnings." + RESET);

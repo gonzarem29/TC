@@ -8,6 +8,10 @@ target/
 .DS_Store
 Thumbs.db
 
+# Archivos generados por ANTLR (se regeneran con mvn generate-sources)
+*.interp
+*.tokens
+
 # Configuraciones de Entornos de Desarrollo (IDEs)
 .idea/
 *.iml
