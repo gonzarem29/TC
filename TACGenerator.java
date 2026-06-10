@@ -134,12 +134,27 @@ public class TACGenerator {
     }
 
     private String genBinOp(BinOp node) {
-        System.out.println("[TAC] BinOp pendiente: " + node.op);
-        return null;
+        String leftTemp = genExpr(node.left);
+        String rightTemp = genExpr(node.right);
+        String result = newTemp();
+        emit(node.op, leftTemp, rightTemp, result);
+        return result;
     }
 
     private String genUnaryOp(UnaryOpNode node) {
-        System.out.println("[TAC] UnaryOp pendiente: " + node.op);
-        return null;
+        String exprTemp = genExpr(node.expr);
+        String op = node.op;
+
+        if (op.equals("++") || op.equals("--")) {
+            String result = newTemp();
+            String arithOp = op.equals("++") ? "+" : "-";
+            emit(arithOp, exprTemp, "1", result);
+            emit("=", result, null, exprTemp);
+            return result;
+        }
+
+        String result = newTemp();
+        emit(op, exprTemp, null, result);
+        return result;
     }
 }
