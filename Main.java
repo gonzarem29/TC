@@ -1,6 +1,5 @@
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.*;
-import org.antlr.v4.gui.TreeViewer; 
 import java.util.Arrays;            
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -42,24 +41,25 @@ public class Main {
             System.out.println("--- ÁRBOL SINTÁCTICO (PARSE TREE) ---");
             System.out.println(tree.toStringTree(parser));
 
-            // 7. Visualizar el árbol gráficamente (Ventana Interactiva)
-            System.out.println("Abriendo ventana con el Árbol Sintáctico...");
-            javax.swing.SwingUtilities.invokeLater(() -> {
-                TreeViewer viewer = new TreeViewer(
+            // 7. Visualizar el árbol gráficamente (Ventana Interactiva, opcional)
+            try {
+                System.out.println("Abriendo ventana con el Árbol Sintáctico...");
+                org.antlr.v4.gui.TreeViewer viewer = new org.antlr.v4.gui.TreeViewer(
                     Arrays.asList(parser.getRuleNames()), tree
                 );
                 viewer.setScale(1.5);
-            
+
                 javax.swing.JFrame frame = new javax.swing.JFrame("Parse Tree");
                 frame.setDefaultCloseOperation(javax.swing.JFrame.DISPOSE_ON_CLOSE);
                 frame.add(new javax.swing.JScrollPane(viewer));
                 frame.setSize(800, 600);
                 frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
-            });
 
-// Pausa para que la ventana se renderice antes de continuar
-Thread.sleep(500);
+                Thread.sleep(500);
+            } catch (Throwable e) {
+                System.out.println("  (ventana gráfica no disponible: " + e.getClass().getSimpleName() + ")");
+            }
 
             // 8. CONSTRUCCIÓN DEL AST (Etapa 2 finalizada)
             System.out.println("Construyendo Árbol de Sintaxis Abstracta (AST)...");
