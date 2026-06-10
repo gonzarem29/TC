@@ -221,6 +221,46 @@ public class ASTVisitor extends cppparserBaseVisitor<ASTNode> {
     }
 
     @Override
+    public ASTNode visitExprIgualdad(cppparser.ExprIgualdadContext ctx) {
+        ASTNode left = visit(ctx.expr(0));
+        ASTNode right = visit(ctx.expr(1));
+
+        BinOp nodo = new BinOp(ctx.op.getText(), left, right);
+        nodo.line = ctx.getStart().getLine();
+        return nodo;
+    }
+
+    @Override
+    public ASTNode visitExprAnd(cppparser.ExprAndContext ctx) {
+        ASTNode left = visit(ctx.expr(0));
+        ASTNode right = visit(ctx.expr(1));
+
+        BinOp nodo = new BinOp("&&", left, right);
+        nodo.line = ctx.getStart().getLine();
+        return nodo;
+    }
+
+    @Override
+    public ASTNode visitExprOr(cppparser.ExprOrContext ctx) {
+        ASTNode left = visit(ctx.expr(0));
+        ASTNode right = visit(ctx.expr(1));
+
+        BinOp nodo = new BinOp("||", left, right);
+        nodo.line = ctx.getStart().getLine();
+        return nodo;
+    }
+
+    @Override
+    public ASTNode visitExprUnaria(cppparser.ExprUnariaContext ctx) {
+        ASTNode expr = visit(ctx.expr());
+        String op = ctx.op.getText();
+
+        UnaryOpNode nodo = new UnaryOpNode(op, expr);
+        nodo.line = ctx.getStart().getLine();
+        return nodo;
+    }
+
+    @Override
     public ASTNode visitExprLiteral(cppparser.ExprLiteralContext ctx) {
         NumNode nodo = new NumNode(ctx.getText());
         nodo.line = ctx.getStart().getLine();
