@@ -3,6 +3,7 @@ import org.antlr.v4.runtime.tree.*;
 import org.antlr.v4.gui.TreeViewer; 
 import java.util.Arrays;            
 import java.io.IOException;
+import java.nio.file.Paths;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -84,6 +85,26 @@ Thread.sleep(500);
                 System.out.println("\u001B[31mEl proceso de compilación se detuvo debido a errores semánticos.\u001B[0m");
                 return;
             }
+
+              // ------------------------------------------------------
+            // ETAPA 4: GENERACIÓN DE CÓDIGO INTERMEDIO (TAC)
+            // ------------------------------------------------------
+            System.out.println("\n\u001B[34m══════════════════════════════════════════\u001B[0m");
+            System.out.println("\u001B[34m GENERANDO CÓDIGO INTERMEDIO (Etapa 4) \u001B[0m");
+            System.out.println("\u001B[34m══════════════════════════════════════════\u001B[0m");
+
+            TACGenerator tacGen = new TACGenerator();
+            tacGen.generate(astRoot);
+            tacGen.printCode();
+
+            // Guardar a archivo .tac en output/
+            String inputPath = args[0];
+            String baseName = inputPath.contains(".") ? inputPath.substring(0, inputPath.lastIndexOf('.')) : inputPath;
+            String fileName = Paths.get(baseName).getFileName().toString();
+            String outputDir = "output";
+            new java.io.File(outputDir).mkdirs();
+            String tacFile = outputDir + "/" + fileName + ".tac";
+            tacGen.saveToFile(tacFile);
 
 
         } catch (IOException e) {
